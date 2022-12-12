@@ -1,5 +1,5 @@
 <a href=""><p align="center">
-<img height=100 src=""/>
+<img height=100 src="https://github.com/GarretTomlin/JSE_API/blob/main/docs/logo1.svg"/>
 <p align="center">
   <strong>A optimal way of investing in the Jamaica Stock Market 📈</strong>
 </p>
