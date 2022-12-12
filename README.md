@@ -8,7 +8,6 @@
 
 ## About The Project
 
-TOMI is a monorepo budgeting/fanancial web application. The purpose of TOMI is to give the user an interface with all the information needed about a stock , stock news, new apo etc, also equip with an budgeting feature to manage your funds and see where exactly the funds are going, making investing in the Jamaica Stock Market a lot easier.
 
 ### Built With
 
