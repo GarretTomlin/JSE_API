@@ -33,14 +33,12 @@ Clone the project from github
 Once the project is downloaded cd into the directory
 
 ```
-npm i nx && npm install
 ```
 
 Once all dependencies are installed
 
 ```
-nx serve frontend 
-nx serve api
+
 ```
 
 ## Technical Stuffs
