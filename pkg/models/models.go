@@ -14,6 +14,13 @@ type UrlStorage struct {
 	Cache map[string]bool
 }
 
+func ConnectToDB(driver string, dataSource string) (*sql.DB, error) {
+	db, err := sql.Open(driver, dataSource)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
 
 // It satisfies the queue.Storage interface.
 func (s *UrlStorage) Init() error {

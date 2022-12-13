@@ -1,32 +1,23 @@
 package main
 
 import (
-	"JSE_API/pkg/models"
-	"github.com/gocolly/colly/queue"
-	ds"JSE_API/pkg/configs"
+	"JSE_API/pkg/routes"
+	"JSE_API/pkg/configs"
+	"net/http"
+	"log"
 )
 
-var Storage *models.UrlStorage
 
-func main(){
-	  // Connect to the database
-	  db, err := ds.ConnectToDB("sqlite3", "./urls.db")
-	  if err != nil {
-		 panic(err)
+func main() {
+	configs.Init()
+	router := routes.New()
+	var err error
+
+	httpRouter := router.GetHttpRouter()
+
+	log.Println("Lisitening on port : 8001")
+	err = http.ListenAndServe(":8001", httpRouter)
+	if err != nil {
+		log.Fatal("Unable to start server", err)
 	}
-	  // Create a new Storage instance
-	  Storage := &models.UrlStorage{Db: db, Cache: make(map[string]bool)}
-
-	  q, _ := queue.New(
-		// Use 10 threads for scraping
-		10,
-		// Use the MyStorage instance as the storage backend for the URL queue
-		Storage,
-	  )
-
-
-
-  // Start scraping
-  q.Run(ds.C)
-
 }

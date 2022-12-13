@@ -1,26 +1,32 @@
 package controllers
 
 import (
-	store "JSE_API/cmd"
 	c "JSE_API/pkg/configs"
+	d "JSE_API/pkg/services/addLinkToDb"
+	filter "JSE_API/pkg/services/urlFilter"
+	"net/http"
+	"net/url"
+	"regexp"
+	"log"
 	"github.com/gocolly/colly"
 	"github.com/julienschmidt/httprouter"
-	"log"
-	"net/http"
-	"regexp"
 )
 
 type TradeSummary struct {
 }
 
+// Create a list of URL filters as regular expressions
+var urlFilters = []*regexp.Regexp{
+	regexp.MustCompile(`https://www.jamstockex.com/trading/trade-summary/`),
+}
 func (s *TradeSummary) GetStockAdvancing(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	type data struct {
-		SYMBOL        string `json:"SYMBOL"`
-		SECURITY      string `json:"SECURITY"`
-		VOLUME        string `json:"VOLUME"`
-		CLOSING_PRICE string `json:"CLOSING_PRICE"`
-		PRICE_CHANGE  string `json:"PRICE_CHANGE"`
-		CHANGE        string `json:"CHANGE"`
+		SYMBOL            string `json:"SYMBOL"`
+		SECURITY_NAME     string `json:"SECURITY"`
+		VOLUME            string `json:"VOLUME"`
+		CLOSING_PRICE     string `json:"CLOSING_PRICE"`
+		PRICE_CHANGE      string `json:"PRICE_CHANGE"`
+		CHANGE_PERCENTAGE string `json:"CHANGE"`
 	}
 	summary := make([]data, 0)
 
@@ -36,48 +42,63 @@ func (s *TradeSummary) GetStockAdvancing(w http.ResponseWriter, r *http.Request,
 
 		// Create a new data struct and append it to the summary slice
 		allData := data{
-			SYMBOL:        symbol,
-			SECURITY:      security,
-			VOLUME:        volume,
-			CLOSING_PRICE: closingPrice,
-			PRICE_CHANGE:  priceChange,
-			CHANGE:        changePercent,
+			SYMBOL:            symbol,
+			SECURITY_NAME:     security,
+			VOLUME:            volume,
+			CLOSING_PRICE:     closingPrice,
+			PRICE_CHANGE:      priceChange,
+			CHANGE_PERCENTAGE: changePercent,
 		}
 
 		summary = append(summary, allData)
 	})
 
-	// Create a list of URL filters as regular expressions
-	var urlFilters = []*regexp.Regexp{
-		regexp.MustCompile(`example\.com`),
-		regexp.MustCompile(`example\.org`),
+	filter.VisitIfNotFiltered(urlFilters)
+	// Send the JSON response
+	SendJson(w, http.StatusOK, summary)
+}
+func (s *TradeSummary) GetStockDeclining(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	type data struct {
+		SYMBOL        string `json:"SYMBOL"`
+		SECURITY      string `json:"SECURITY"`
+		VOLUME        string `json:"VOLUME"`
+		CLOSING_PRICE string `json:"CLOSING_PRICE"`
+		PRICE_CHANGE  string `json:"PRICE_CHANGE"`
+		CHANGE        string `json:"CHANGE"`
 	}
-
-	// Get the URL from the store
-	u, err := store.Storage.Get()
-	if err != nil {
-		// Handle the error by logging it or taking some other action
-		log.Println(err)
-	} else {
-		// Flag to track whether the URL was skipped by a filter
-		skipped := false
-
-		// Check if the URL matches any of the filters
-		for _, filter := range urlFilters {
-			if filter.MatchString(u.String()) {
-				// If the URL matches a filter, skip it and set the skipped flag to true
-				skipped = true
-				continue
-			}
-		}
-
-		// Check if the URL was not skipped by any of the filters
-		if !skipped {
-			// Visit the URL by calling the String method on the u variable
-			c.C.Visit(u.String())
-		}
-	}
+	summary := make([]data, 0)
 
 	// Send the JSON response
 	SendJson(w, http.StatusOK, summary)
+
+}
+
+func (s *TradeSummary) GetStockSummary() {
+
+	var pattern = []*regexp.Regexp{
+		regexp.MustCompile(`https://www\.jamstockex\.com/trading/instruments/\?instrument`),
+		}
+
+	// Register the callback function to be called for each matching HTML element
+	c.C.OnHTML("a[href]", func(e *colly.HTMLElement){
+		// Loop through the slice of regular expression objects
+	for _, regex := range pattern {
+		// Check if the `href` attribute matches the regex pattern
+		if regex.MatchString(e.Attr("href")) {
+			// Create a new slice containing the single regular expression object
+			slice := []*regexp.Regexp{regex}
+			// Parse the `e.Text` string value into a *url.URL value
+			u, err := url.Parse(e.Text)
+			if err != nil {
+				// Handle the error by logging it or taking some other action
+				log.Println(err)
+				break
+			}
+			// Pass the slice and the *url.URL value as arguments to the AddLinkToDb function
+			d.AddLinkToDb(u, slice)
+			break
+		}
+	}
+	})
+	filter.VisitIfNotFiltered(urlFilters)
 }
