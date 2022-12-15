@@ -11,11 +11,8 @@
 
 ### Built With
 
--   [NodeJS](https://nodejs.org)
--   [Express](https://expressjs.com)
--   [Prisma](https://www.prisma.io/)
--   [NX](https://nx.dev/)
--   [ReactJS](https://reactjs.org/)
+-   [Golang](https://go.dev/)
+-   [Docker](https://www.docker.com/)
 
 
 ## Getting Started
