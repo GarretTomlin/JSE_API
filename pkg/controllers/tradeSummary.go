@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	c "JSE_API/pkg/configs"
+	c "JSE_API/pkg/configs/config_colly"
 	d "JSE_API/pkg/services/addLinkToDb"
 	filter "JSE_API/pkg/services/urlFilter"
 	"net/http"
@@ -95,7 +95,7 @@ func (s *TradeSummary) GetStockSummary() {
 				break
 			}
 			// Pass the slice and the *url.URL value as arguments to the AddLinkToDb function
-			d.AddLinkToDb(u, slice)
+			d.Ingest(u, slice)
 			break
 		}
 	}

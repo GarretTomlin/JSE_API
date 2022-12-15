@@ -1,14 +1,15 @@
 package urlFilter
 
 import (
-	c "JSE_API/pkg/configs"
+	c "JSE_API/pkg/configs/config_colly"
+	handler "JSE_API/pkg/configs/config_database"
 	"log"
 	"regexp"
 )
 
 func VisitIfNotFiltered(urlFilters []*regexp.Regexp) bool {
 	// Get the URL from the database
-	u, err := c.Storage.Get()
+	u, err := handler.Storage.Get()
 	if err != nil {
 		// Handle the error by logging it or taking some other action
 		log.Println(err)

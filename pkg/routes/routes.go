@@ -27,4 +27,7 @@ func (r *Routes) ApiRoutes() {
 
 	//Summary Routes
 	router.GET("/TradeSummary", TradeSummary.GetStockAdvancing)
+
+	//health checks
+	router.GET("/healthcheck", controllers.HealthCheck)
 }

@@ -2,14 +2,14 @@ package main
 
 import (
 	"JSE_API/pkg/routes"
-	"JSE_API/pkg/configs"
+	"JSE_API/pkg/configs/config_colly"
 	"net/http"
 	"log"
 )
 
 
 func main() {
-	configs.Init()
+	config_colly.Init()
 	router := routes.New()
 	var err error
 

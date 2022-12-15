@@ -1,14 +1,14 @@
 package addLinkToDb
 
 import(
-	c "JSE_API/pkg/configs"
+	handler "JSE_API/pkg/configs/config_database"
 	"log"
 	"net/url"
 	"regexp"
 
 )
 
-func AddLinkToDb(url *url.URL, StockInfoFilters []*regexp.Regexp) bool{
+func Ingest(url *url.URL, StockInfoFilters []*regexp.Regexp) bool{
 	u, err := url.Parse(url.String())
 	if err != nil {
 		// Handle the error by logging it or taking some other action
@@ -30,7 +30,7 @@ func AddLinkToDb(url *url.URL, StockInfoFilters []*regexp.Regexp) bool{
 		// Check if the URL was not skipped by any of the filters
 		if !skipped {
 			// Visit the URL by calling the String method on the u variable
-			c.Storage.Put(u)
+			handler.Storage.Put(u)
 		return true
 		}
 	}
